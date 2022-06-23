@@ -1665,18 +1665,24 @@ describe('modules/platform/gitea/index', () => {
 
   describe('addReviewers', () => {
     it('should assign reviewers', async () => {
-      expect.assertions(3);
+      expect.assertions(4);
       await initFakePlatform();
+      await initFakeRepo({ full_name: 'some/repo' });
       const mockPR = mockPRs[0];
       await expect(
-        gitea.addReviewers(mockPR.number, ['me', 'you'])
+        gitea.addReviewers(mockPR.number, ['me', 'you', 'team:maintainers'])
       ).resolves.not.toThrow();
 
       expect(helper.requestPrReviewers).toHaveBeenCalledTimes(1);
+      expect(helper.requestPrReviewers).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ reviewers: ['me', 'you'], team_reviewers: ['maintainers'] })
+      );
       expect(logger.warn).not.toHaveBeenCalled();
     });
 
-    it('should should do nothing if version to old', async () => {
+    it('should do nothing if version to old', async () => {
       expect.assertions(3);
       const mockPR = mockPRs[0];
       await expect(

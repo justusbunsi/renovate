@@ -2523,8 +2523,8 @@ By default, `renovate` will update to a version greater than `latest` only if th
 
 Must be valid usernames.
 
-If on GitHub and assigning a team to review, you must use the prefix `team:` and add the _last part_ of the team name.
-Say the full team name on GitHub is `@organization/foo`, then you'd set the config option like this:
+If on GitHub or Gitea and assigning a team to review, you must use the prefix `team:` and add the _last part_ of the team name.
+Say the full team name on GitHub or Gitea is `@organization/foo`, then you'd set the config option like this:
 
 ```json
 {

@@ -14,6 +14,7 @@ import { logger } from '../../../logger';
 import { BranchStatus, PrState, VulnerabilityAlert } from '../../../types';
 import * as git from '../../../util/git';
 import { setBaseUrl } from '../../../util/http/gitea';
+import { regEx } from '../../../util/regex';
 import { sanitize } from '../../../util/sanitize';
 import { ensureTrailingSlash } from '../../../util/url';
 import { getPrBodyStruct, hashBody } from '../pr-body';
@@ -856,8 +857,16 @@ const platform: Platform = {
       );
       return;
     }
+
+    const userReviewers = reviewers.filter((e) => !e.startsWith('team:'));
+    const teamReviewers = reviewers
+      .filter((e) => e.startsWith('team:'))
+      .map((e) => e.replace(regEx(/^team:/), ''));
     try {
-      await helper.requestPrReviewers(config.repository, number, { reviewers });
+      await helper.requestPrReviewers(config.repository, number, {
+        reviewers: userReviewers,
+        team_reviewers: teamReviewers,
+      });
     } catch (err) {
       logger.warn({ err, number, reviewers }, 'Failed to assign reviewer');
     }
